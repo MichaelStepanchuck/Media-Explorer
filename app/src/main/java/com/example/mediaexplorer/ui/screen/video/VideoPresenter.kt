@@ -38,7 +38,7 @@ class VideoPresenter(private val context: Context) : MvpPresenter<VideoView>() {
     }
 
     private fun subscribeForVideos() {
-        val disposable = Observable.interval(15, TimeUnit.SECONDS)
+        val disposable = Observable.interval(UPDATE_INTERVAL_IN_SECONDS, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { getAllVideos() }
@@ -68,6 +68,10 @@ class VideoPresenter(private val context: Context) : MvpPresenter<VideoView>() {
                 )
             })
         }
+    }
+
+    companion object {
+        const val UPDATE_INTERVAL_IN_SECONDS = 15L
     }
 
 }

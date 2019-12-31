@@ -39,7 +39,7 @@ class AudioPresenter(private val context: Context) : MvpPresenter<AudioView>() {
     }
 
     private fun subscribeForAudios() {
-        val disposable = Observable.interval(15, TimeUnit.SECONDS)
+        val disposable = Observable.interval(UPDATE_INTERVAL_IN_SECONDS, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { getAllAudios() }
@@ -67,6 +67,10 @@ class AudioPresenter(private val context: Context) : MvpPresenter<AudioView>() {
             intent.setDataAndType(Uri.parse(audio.path), "video/*")
             context.startActivity(intent)
         }
+    }
+
+    companion object {
+       const val UPDATE_INTERVAL_IN_SECONDS = 15L
     }
 
 }
