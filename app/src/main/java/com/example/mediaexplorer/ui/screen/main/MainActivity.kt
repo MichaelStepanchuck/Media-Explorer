@@ -1,23 +1,23 @@
 package com.example.mediaexplorer.ui.screen.main
 
+import android.Manifest.permission.*
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
-import com.example.mediaexplorer.Constants.REQUIRED_PERMISSIONS
 import com.example.mediaexplorer.R
 import com.example.mediaexplorer.ui.ViewPagerAdapter
-import com.google.android.material.tabs.TabLayoutMediator
-import com.google.android.material.tabs.TabLayoutMediator.TabConfigurationStrategy
+import com.example.mediaexplorer.util.setupTabsWithViewPager
 import kotlinx.android.synthetic.main.activity_main.*
+import permissions.dispatcher.NeedsPermission
+import permissions.dispatcher.RuntimePermissions
 
+@RuntimePermissions
 class MainActivity : MvpAppCompatActivity(), MainView {
 
     @InjectPresenter
@@ -30,22 +30,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
-        if (mainPresenter.permissionsIsGranted(this)) {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE)
-        } else {
-            setupUI()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        val videoUri = data?.data
-
-        if (requestCode == VIDEO_CAPTURE) {
-
-        }
+        setupUIWithPermissionCheck()
     }
 
     override fun onRequestPermissionsResult(
@@ -53,13 +39,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setupUI()
-            } else {
-                showToast("Приложению нужен доступ к памяти")
-            }
-        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        onRequestPermissionsResult(requestCode, grantResults)
     }
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
@@ -99,28 +80,20 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
-    private fun setupUI() {
+    @NeedsPermission(RECORD_AUDIO, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
+    fun setupUI() {
         mediaFragmentsViewPager.adapter = viewPagerAdapter
         mediaFragmentsViewPager.registerOnPageChangeCallback(onPageChangeCallback)
-        TabLayoutMediator(tabs, mediaFragmentsViewPager,
-            TabConfigurationStrategy { tab, position ->
-                tab.text = "Tab " + (position + 1)
-            }).attach()
+        setupTabsWithViewPager(tabs, mediaFragmentsViewPager)
         mainPresenter.setupMediaRecorder()
     }
 
     private val onRecordVideoClickListener = View.OnClickListener {
-        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-        startActivityForResult(intent, VIDEO_CAPTURE)
+        startActivity(Intent(MediaStore.ACTION_VIDEO_CAPTURE))
     }
 
     private val onRecordAudioClickListener = View.OnClickListener {
         mainPresenter.notifyRecordAudioButtonClick()
-    }
-
-    companion object {
-        private const val VIDEO_CAPTURE = 101
-        private const val PERMISSIONS_REQUEST_CODE = 100
     }
 
 }
