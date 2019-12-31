@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.example.mediaexplorer.R
-import com.example.mediaexplorer.ui.screen.fragment.BaseFragment
+import com.example.mediaexplorer.ui.fragment.BaseFragment
 import kotlinx.android.synthetic.main.fragment_video.*
 
 class VideoFragment : BaseFragment(), VideoView {

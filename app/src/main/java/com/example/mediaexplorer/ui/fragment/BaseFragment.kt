@@ -1,4 +1,4 @@
-package com.example.mediaexplorer.ui.screen.fragment
+package com.example.mediaexplorer.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
