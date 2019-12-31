@@ -17,7 +17,7 @@ class MainPresenter : MvpPresenter<MainView>() {
     private var mediaRecorder: MediaRecorder? = null
     private var isRecording: Boolean = false
 
-    fun notifyRecordAudioButtonClick() {
+    private fun notifyRecordAudioButtonClick() {
         if (isRecording) {
             stopRecording()
             return
@@ -81,7 +81,6 @@ class MainPresenter : MvpPresenter<MainView>() {
             viewState.showToast("Recording saved!")
         }
     }
-
 
     private val onRecordVideoClickListener = View.OnClickListener {
         viewState.startCameraIntent()
