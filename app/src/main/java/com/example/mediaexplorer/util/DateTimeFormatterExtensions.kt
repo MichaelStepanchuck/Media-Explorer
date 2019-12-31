@@ -6,6 +6,5 @@ import org.threeten.bp.format.DateTimeFormatter
 
 fun DateTimeFormatter.format(duration: Duration): String {
     val localTime = LocalTime.MIDNIGHT.plus(duration)
-
-    return this.format(localTime)
+    return format(localTime)
 }
