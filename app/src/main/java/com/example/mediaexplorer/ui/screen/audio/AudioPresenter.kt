@@ -15,7 +15,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
-
 @InjectViewState
 class AudioPresenter(private val context: Context) : MvpPresenter<AudioView>() {
 
