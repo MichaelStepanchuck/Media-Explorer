@@ -92,7 +92,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         mediaFragmentsViewPager.adapter = viewPagerAdapter
         mediaFragmentsViewPager.registerOnPageChangeCallback(onPageChangeCallback)
         setupTabsWithViewPager(tabs, mediaFragmentsViewPager)
-        mainPresenter.setupMediaRecorder()
     }
 
 }

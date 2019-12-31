@@ -13,8 +13,7 @@ import java.io.IOException
 @InjectViewState
 class MainPresenter : MvpPresenter<MainView>() {
 
-    private var output: String? = null
-    private var mediaRecorder: MediaRecorder? = null
+    private val mediaRecorder: MediaRecorder = MediaRecorder()
     private var isRecording: Boolean = false
 
     private fun notifyRecordAudioButtonClick() {
@@ -26,14 +25,13 @@ class MainPresenter : MvpPresenter<MainView>() {
         startRecording()
     }
 
-    fun setupMediaRecorder() {
-        output = Environment.getExternalStorageDirectory().absolutePath + "/recording.mp3"
-        File(output!!).createNewFile()
-        mediaRecorder = MediaRecorder()
-        mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC)
-        mediaRecorder?.setOutputFile(output)
+    private fun setupMediaRecorder() {
+        val outputFileName = getVideoFilePath()
+        File(outputFileName).createNewFile()
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC)
+        mediaRecorder.setOutputFile(outputFileName)
     }
 
     fun notifyPageScrollStateChanged(state: Int) {
@@ -42,6 +40,10 @@ class MainPresenter : MvpPresenter<MainView>() {
         } else if (state == ViewPager2.SCROLL_STATE_IDLE) {
             viewState.showFAB()
         }
+    }
+
+    private fun getVideoFilePath(): String {
+        return Environment.getExternalStorageDirectory().toString() + "/" + System.currentTimeMillis() + ".mp3"
     }
 
     fun notifyPageSelected(position: Int) {
@@ -62,8 +64,9 @@ class MainPresenter : MvpPresenter<MainView>() {
 
     private fun startRecording() {
         try {
-            mediaRecorder?.prepare()
-            mediaRecorder?.start()
+            setupMediaRecorder()
+            mediaRecorder.prepare()
+            mediaRecorder.start()
             isRecording = true
             viewState.showToast("Recording started!")
         } catch (e: IllegalStateException) {
@@ -75,8 +78,8 @@ class MainPresenter : MvpPresenter<MainView>() {
 
     private fun stopRecording() {
         if (isRecording) {
-            mediaRecorder?.stop()
-            mediaRecorder?.release()
+            mediaRecorder.stop()
+            mediaRecorder.release()
             isRecording = false
             viewState.showToast("Recording saved!")
         }
