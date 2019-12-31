@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Media Explorer</string>
     <string name="record_video">Record video</string>
+    <string name="record_audio">Record audio</string>
 </resources>
