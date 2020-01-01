@@ -3,16 +3,15 @@ package com.example.mediaexplorer.ui.screen.video
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import com.example.mediaexplorer.Constants.APPLICATION_TAG
 import com.example.mediaexplorer.entity.Video
 import com.example.mediaexplorer.repository.VideoRepository
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @InjectViewState
@@ -53,7 +52,7 @@ class VideoPresenter(private val context: Context) : MvpPresenter<VideoView>() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { videoAdapter.setData(it) },
-                { Log.e(APPLICATION_TAG, "Failed to subscribe on video list") }
+                { Timber.e("Failed to subscribe on video list") }
             )
 
         compositeDisposable.add(disposable)

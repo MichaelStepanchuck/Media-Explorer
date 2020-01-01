@@ -3,16 +3,15 @@ package com.example.mediaexplorer.ui.screen.audio
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import com.example.mediaexplorer.Constants.APPLICATION_TAG
 import com.example.mediaexplorer.entity.Audio
 import com.example.mediaexplorer.repository.AudioRepository
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @InjectViewState
@@ -53,7 +52,7 @@ class AudioPresenter(private val context: Context) : MvpPresenter<AudioView>() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { audioAdapter.setData(it) },
-                { Log.e(APPLICATION_TAG, "Failed to subscribe on audio list") }
+                { Timber.e("Failed to subscribe on audio list") }
             )
 
         compositeDisposable.add(disposable)
@@ -69,7 +68,7 @@ class AudioPresenter(private val context: Context) : MvpPresenter<AudioView>() {
     }
 
     companion object {
-       const val UPDATE_INTERVAL_IN_SECONDS = 15L
+        const val UPDATE_INTERVAL_IN_SECONDS = 15L
     }
 
 }
