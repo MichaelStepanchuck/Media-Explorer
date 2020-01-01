@@ -2,6 +2,7 @@ package com.example.mediaexplorer.ui.screen.main
 
 import android.media.MediaRecorder
 import android.os.Environment
+import android.os.SystemClock
 import android.view.View
 import androidx.viewpager2.widget.ViewPager2
 import com.arellomobile.mvp.InjectViewState
@@ -13,8 +14,10 @@ import java.io.IOException
 @InjectViewState
 class MainPresenter : MvpPresenter<MainView>() {
 
-    private val mediaRecorder: MediaRecorder = MediaRecorder()
+    private var mediaRecorder: MediaRecorder? = null
     private var isRecording: Boolean = false
+
+    private var recordingStartTime = 0L
 
     private fun notifyRecordAudioButtonClick() {
         if (isRecording) {
@@ -28,10 +31,12 @@ class MainPresenter : MvpPresenter<MainView>() {
     private fun setupMediaRecorder() {
         val outputFileName = getVideoFilePath()
         File(outputFileName).createNewFile()
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC)
-        mediaRecorder.setOutputFile(outputFileName)
+        mediaRecorder = MediaRecorder().apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC)
+            setOutputFile(outputFileName)
+        }
     }
 
     fun notifyPageScrollStateChanged(state: Int) {
@@ -65,8 +70,11 @@ class MainPresenter : MvpPresenter<MainView>() {
     private fun startRecording() {
         try {
             setupMediaRecorder()
-            mediaRecorder.prepare()
-            mediaRecorder.start()
+            mediaRecorder?.apply {
+                prepare()
+                start()
+            }
+            recordingStartTime = SystemClock.uptimeMillis()
             isRecording = true
             viewState.showToast("Recording started!")
         } catch (e: IllegalStateException) {
@@ -77,9 +85,14 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     private fun stopRecording() {
+        if (SystemClock.uptimeMillis() - recordingStartTime < 1000) return
+
         if (isRecording) {
-            mediaRecorder.stop()
-            mediaRecorder.release()
+            mediaRecorder?.apply {
+                stop()
+                release()
+            }
+            recordingStartTime = 0L
             isRecording = false
             viewState.showToast("Recording saved!")
         }
