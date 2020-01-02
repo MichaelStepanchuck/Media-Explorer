@@ -1,5 +1,8 @@
 package com.example.mediaexplorer.ui.screen.audio
 
+import android.content.Intent
+import android.content.Intent.ACTION_VIEW
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,6 +11,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.example.mediaexplorer.R
 import com.example.mediaexplorer.ui.fragment.BaseFragment
 import kotlinx.android.synthetic.main.fragment_audio.*
+import org.koin.android.ext.android.get
 
 class AudioFragment : BaseFragment(), AudioView {
 
@@ -15,7 +19,7 @@ class AudioFragment : BaseFragment(), AudioView {
     lateinit var audioPresenter: AudioPresenter
 
     @ProvidePresenter
-    fun provideAudioPresenter() = AudioPresenter(context!!.applicationContext)
+    fun provideAudioPresenter() = get<AudioPresenter>()
 
     override fun getLayoutResId(): Int = R.layout.fragment_audio
 
@@ -26,6 +30,13 @@ class AudioFragment : BaseFragment(), AudioView {
 
     override fun setAdapter(audioAdapter: AudioAdapter) {
         audioListRecyclerView.adapter = audioAdapter
+    }
+
+    override fun playAudioWithPlayer(videoUri: Uri) {
+        startActivity(Intent().apply {
+            action = ACTION_VIEW
+            setDataAndType(videoUri, "video/*")
+        })
     }
 
 }

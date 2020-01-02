@@ -9,9 +9,9 @@ import io.reactivex.Single
 import org.threeten.bp.Duration
 import java.io.File
 
-class AudioRepository {
+class AudioRepository(val context: Context) {
 
-    fun getAllAudios(context: Context): Single<MutableList<Audio>> {
+    fun getAllAudios(): Single<MutableList<Audio>> {
         val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
 
         val projection = arrayOf(

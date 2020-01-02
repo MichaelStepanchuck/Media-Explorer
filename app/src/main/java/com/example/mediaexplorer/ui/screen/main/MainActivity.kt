@@ -14,6 +14,7 @@ import com.example.mediaexplorer.R
 import com.example.mediaexplorer.ui.ViewPagerAdapter
 import com.example.mediaexplorer.util.setupTabsWithViewPager
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.get
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
 
@@ -24,7 +25,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     lateinit var mainPresenter: MainPresenter
 
     @ProvidePresenter
-    fun provideMainPresenter() = MainPresenter()
+    fun provideMainPresenter() = get<MainPresenter>()
 
     private val viewPagerAdapter = ViewPagerAdapter(this)
 

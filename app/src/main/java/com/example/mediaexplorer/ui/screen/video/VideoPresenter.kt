@@ -1,7 +1,5 @@
 package com.example.mediaexplorer.ui.screen.video
 
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
@@ -15,11 +13,9 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @InjectViewState
-class VideoPresenter(private val context: Context) : MvpPresenter<VideoView>() {
+class VideoPresenter(private val videoRepository: VideoRepository) : MvpPresenter<VideoView>() {
 
     private val videoAdapter = VideoAdapter()
-
-    private val videoRepository = VideoRepository()
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -47,7 +43,7 @@ class VideoPresenter(private val context: Context) : MvpPresenter<VideoView>() {
     }
 
     private fun getAllVideos() {
-        val disposable = videoRepository.getAllVideos(context)
+        val disposable = videoRepository.getAllVideos()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -60,12 +56,7 @@ class VideoPresenter(private val context: Context) : MvpPresenter<VideoView>() {
 
     private val videoCallback = object : VideoCallback {
         override fun onVideoListItemClick(video: Video) {
-            context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(
-                    Uri.parse(video.path),
-                    "video/*"
-                )
-            })
+            viewState.playVideoWithPlayer(Uri.parse(video.path))
         }
     }
 

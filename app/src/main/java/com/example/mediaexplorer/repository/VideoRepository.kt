@@ -9,9 +9,9 @@ import io.reactivex.Single
 import org.threeten.bp.Duration
 import java.io.File
 
-class VideoRepository {
+class VideoRepository(val context: Context) {
 
-    fun getAllVideos(context: Context): Single<MutableList<Video>> {
+    fun getAllVideos(): Single<MutableList<Video>> {
         val arrayList = arrayListOf<Video>()
         val projection = arrayOf(
             MediaStore.Video.Media._ID,

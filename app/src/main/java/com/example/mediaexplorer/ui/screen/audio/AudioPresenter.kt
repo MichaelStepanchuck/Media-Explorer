@@ -1,7 +1,5 @@
 package com.example.mediaexplorer.ui.screen.audio
 
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
@@ -15,11 +13,9 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @InjectViewState
-class AudioPresenter(private val context: Context) : MvpPresenter<AudioView>() {
+class AudioPresenter(private val audioRepository: AudioRepository) : MvpPresenter<AudioView>() {
 
     private val audioAdapter = AudioAdapter()
-
-    private val audioRepository = AudioRepository()
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -47,7 +43,7 @@ class AudioPresenter(private val context: Context) : MvpPresenter<AudioView>() {
     }
 
     private fun getAllAudios() {
-        val disposable = audioRepository.getAllAudios(context)
+        val disposable = audioRepository.getAllAudios()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -60,10 +56,7 @@ class AudioPresenter(private val context: Context) : MvpPresenter<AudioView>() {
 
     private val audioCallback = object : AudioCallback {
         override fun onAudioListItemClick(audio: Audio) {
-            val intent = Intent()
-            intent.action = Intent.ACTION_VIEW
-            intent.setDataAndType(Uri.parse(audio.path), "video/*")
-            context.startActivity(intent)
+            viewState.playAudioWithPlayer(Uri.parse(audio.path))
         }
     }
 
