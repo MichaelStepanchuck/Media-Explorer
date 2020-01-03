@@ -1,64 +1,35 @@
 package com.example.mediaexplorer.repository
 
-import android.content.Context
-import android.media.MediaMetadataRetriever
-import android.net.Uri
-import android.provider.MediaStore
+import android.content.ContentResolver
+import android.provider.MediaStore.MediaColumns.*
+import android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 import com.example.mediaexplorer.entity.Video
 import io.reactivex.Single
 import org.threeten.bp.Duration
-import java.io.File
 
-class VideoRepository(val context: Context) {
+class VideoRepository(private val contentResolver: ContentResolver) {
 
     fun getAllVideos(): Single<MutableList<Video>> {
         val arrayList = arrayListOf<Video>()
-        val projection = arrayOf(
-            MediaStore.Video.Media._ID,
-            MediaStore.Video.Media.DATA,
-            MediaStore.Video.Media.DISPLAY_NAME,
-            MediaStore.Video.Media.SIZE
-        )
-        val cursor = context.contentResolver.query(
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            null,
-            null,
-            null
-        )
-        cursor?.apply {
-            try {
-                moveToFirst()
-                do {
-                    arrayList.add(
-                        Video(
-                            getInt(getColumnIndexOrThrow(MediaStore.Video.Media._ID)),
-                            getString(getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)),
-                            getString(getColumnIndexOrThrow(MediaStore.Video.Media.DATA)),
-                            getVideoDuration(
-                                context,
-                                getString(getColumnIndexOrThrow(MediaStore.Video.Media.DATA))
-                            ),
-                            getLong(getColumnIndexOrThrow(MediaStore.Video.Media.SIZE))
-                        )
+        val projection = arrayOf(_ID, DATA, DISPLAY_NAME, SIZE, DURATION)
+
+        contentResolver.query(EXTERNAL_CONTENT_URI, projection, null, null, null)?.apply {
+            while (moveToNext()) {
+                arrayList.add(
+                    Video(
+                        getInt(getColumnIndexOrThrow(_ID)),
+                        getString(getColumnIndexOrThrow(DISPLAY_NAME)),
+                        getString(getColumnIndexOrThrow(DATA)),
+                        Duration.ofMillis(getLong(getColumnIndexOrThrow(DURATION))),
+                        getLong(getColumnIndexOrThrow(SIZE))
                     )
-                } while (moveToNext())
-                close()
-            } catch (e: Exception) {
-                e.printStackTrace()
+                )
             }
+
+            close()
         }
 
         return Single.just(arrayList)
-    }
-
-    private fun getVideoDuration(context: Context, videoPath: String): Duration {
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(context, Uri.fromFile(File(videoPath)))
-        val time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        retriever.release()
-
-        return Duration.ofMillis(time.toLong())
     }
 
 }
